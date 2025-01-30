@@ -17,6 +17,8 @@ export class HomeComponent implements OnInit {
   imagePath:string= "https://image.tmdb.org/t/p/w500";
   pageNumber :string = '1';
 
+  selectedId:number =1;
+
   @ViewChildren('element') elements !: QueryList<ElementRef>;
   
   ngOnInit(): void {
@@ -91,5 +93,10 @@ export class HomeComponent implements OnInit {
     const activeElement = this.elements.find((element, index) => element.nativeElement.getAttribute('name') === this.pageNumber)
     activeElement? activeElement.nativeElement.classList.replace('page-unactive','page-active') : null;
 
+  }
+
+  selectedIndex(id:number){
+    this.selectedId = id;
+    console.log(id);
   }
 }
