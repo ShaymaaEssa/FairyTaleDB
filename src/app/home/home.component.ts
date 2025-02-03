@@ -1,6 +1,10 @@
-import { Component, ElementRef, inject, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, QueryList, SimpleChanges, ViewChildren } from '@angular/core';
 import { ApiserviceService } from '../apiservice.service';
 import { IMovie } from '../interface/imovie';
+import { initFlowbite } from 'flowbite';
+import { Subscription } from 'rxjs';
+
+
 
 @Component({
   selector: 'app-home',
@@ -20,10 +24,13 @@ export class HomeComponent implements OnInit {
   selectedId:number =1;
 
   @ViewChildren('element') elements !: QueryList<ElementRef>;
+
+  apiCall: Subscription = new Subscription();
   
   ngOnInit(): void {
+    
     this.getData()
-  }
+  } 
 
   changePage( pageNum:string){
     
@@ -67,10 +74,11 @@ export class HomeComponent implements OnInit {
   }
 
   getData():void{
-    this.apiService.getData().subscribe({
+    this.apiCall= this.apiService.getData().subscribe({
       next:(res)=>{
         this.movies = res.results
-        console.log(res)
+        console.log(res);
+        this.reinitializeFlowbite();
       }, 
       error:(err)=>{
         console.log(err)
@@ -81,6 +89,11 @@ export class HomeComponent implements OnInit {
     })
   }
 
+  reinitializeFlowbite(): void {
+    setTimeout(() => {
+      initFlowbite(); // Reinitialize Flowbite
+    }, 0);
+  }
 
   setActivePage(){
     this.elements.forEach((element)=>{
@@ -98,5 +111,11 @@ export class HomeComponent implements OnInit {
   selectedIndex(id:number){
     this.selectedId = id;
     console.log(id);
+    console.log(this.movies[id].title)
+  }
+
+  ngOnDestroy(): void {
+   this.apiCall.unsubscribe();
+    
   }
 }
